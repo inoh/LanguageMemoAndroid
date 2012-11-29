@@ -9,6 +9,51 @@
 	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 	<script type="text/javascript" charset="utf-8" src="js/cordova-2.1.0.js"></script>
 <script type="text/javascript" charset="utf-8">
+		var pictureSource;
+		var destinationType;
+
+		document.addEventListener ("deviceready", function () {
+			pictureSource = navigator.camera.PictureSourceType;
+			destinationType = navigator.camera.DestinationType;
+		}, false);
+		
+		function capturePhoto () {
+			navigator.camera.getPicture(onPhotoDataSuccess, onFail, {quality: 50})
+		}
+		
+		function onPhotoDataSuccess (imageData) {
+			document.getElementById("content_uri").value = imageData;
+			var smallImage = document.getElementById('smallImage');
+			smallImage.style.display = 'block';
+			smallImage.src = imageData;
+		}
+		
+		function win_uri2path (FileEntry) {
+			document.getElementById("full_path").value = FileEntry.FullPath;
+		}
+		
+		function fail_uri2path (evt) {
+			alert ("error: " + evt.code);
+		}
+		
+		function uri2path () {
+			var c_uri = document.getElementById("content_uri").value;
+			window.resolveLocalFileSystemURI (c_uri, win_uri2path, fail_uri2path);
+		}
+		
+		function getPhoto (source) {
+			navigator.camera.getPicture (onPhotoURISucess, onFail, {quality: 50, destinationType: destinationType.FILE_URI, sourceType: source});
+		}
+		
+		function onPhotoURISucess (imageURI) {
+			document.getElementById("largeImage");
+			largeImage.style.display = 'block';
+			largeImage.src = imageURI;
+		}
+		
+		function onFail (message) {
+			alert("エラーが発生しました:" + message);
+		}
 $(function () {
     $.getJSON('http://ino-h.com/lm/memos.json', function (data) {
         jQuery.each(data, function () {
@@ -25,8 +70,38 @@ $(function () {
 			<h1>メモ一覧</h1>
 		</div>
 		<div data-role="content">
+			<a href="#capture">入力</a>
+		</div>
+		<div data-role="content">
 			<ul id="note" data-role="listview" data-inset="true" data-filter="true">
 			</ul>
+		</div>
+	</div>
+
+	<div id="capture" data-role="page">
+		<div data-role="content">
+			<button onclick="capturePhoto();">写真を撮影</button>	<br />
+			<button onclick="getPhoto(pictureSource.PHOTOLIBRARY);">フォトライブラリから取得</button>
+			<button onclick="getPhoto(pictureSource.SAVEDPHOTOALBUM);">フォトアルバムから取得</button>
+		
+			<table>
+				<tr>
+					<th>content URI:</th>
+					<th><textarea rows="2" id="content_uri" value=""></textarea></th>
+				</tr>
+			</table>
+
+			<button onclick="uri2path();">URIをフルパスに変換</button>
+
+			<table>
+				<tr>
+					<th>&nbsp;&nbsp;&nbsp;full path:</th>
+					<th><textarea rows="2" id="full_path" value=""></textarea></th>
+				</tr>
+			</table>
+
+			<img style="display:none;width:60px;height:60px;" id="smallImage" src="" />
+			<img style="display:none;" id="largeImage" src="" />
 		</div>
 	</div>
 </body>
