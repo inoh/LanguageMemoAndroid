@@ -15,7 +15,7 @@
 			$("#getLibrary").click (lm.getLibrary);
 		    $.getJSON(lm.URL + "/memos.json", function (data) {
         		jQuery.each(data, function () {
-		            $("ul#note").append('<li><a href="#capture" data-icon="none" data-transition="pop" data-rel="dialog">' + this.title + '</a></li>');
+		            $("ul#note").append('<li><a href="#capture" onClick="lm.setId(\'' + this.id + '\')" data-icon="none" data-transition="pop" data-rel="dialog">' + this.title + '</a></li>');
         		});
 		        $("ul#note").listview('refresh')
 		    });
@@ -33,7 +33,6 @@
 		</div>
 	</div>
 	<div id="capture" data-role="page">
-		<label id="capture_label"></label>
 		<div data-role="content">
 			<button id="getCamera" data-theme="b">写真を撮影</button>
 			<button id="getLibrary" data-theme="b">写真を選択</button>
