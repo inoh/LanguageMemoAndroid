@@ -5,19 +5,30 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Cordova</title>
 	<link href="css/jquery.mobile-1.2.0.min.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="css/imgloader.css" media="all" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 	<script type="text/javascript" charset="utf-8" src="js/cordova-2.1.0.js"></script>
+	<script type="text/javascript" charset="utf-8" src="js/imgloader.js"></script>
 	<script type="text/javascript" charset="utf-8" src="js/language.memo.js"></script>
 	<script type="text/javascript" charset="utf-8">
 		$(function () {
 			$("#getCamera").click (lm.getCamera);
 			$("#getLibrary").click (lm.getLibrary);
 		    $.getJSON(lm.URL + "/memos.json", function (data) {
-        		jQuery.each(data, function () {
+   	    		jQuery.each(data, function () {
 		            $("ul#note").append('<li><a href="#capture" onClick="lm.setId(\'' + this.id + '\')" data-icon="none" data-transition="pop" data-rel="dialog">' + this.title + '</a></li>');
-        		});
-		        $("ul#note").listview('refresh')
+       			});
+	        	$("ul#note").listview('refresh')
+		    });
+		    $("#createMemo").click(function () {
+		    	$.post(lm.URL + "/memos.json", {"memo[title]": $("#memo_title").val(), "memo[note]": $("#memo_note").val()})
+		    		.success(function (data) {
+			            $("ul#note").append('<li><a href="#capture" onClick="lm.setId(\'' + data.id + '\')" data-icon="none" data-transition="pop" data-rel="dialog">' + data.title + '</a></li>');
+	    		    	$("ul#note").listview('refresh')
+		    			$('.ui-dialog').dialog('close');
+		    		})
+		    		.error(function () {alert("error")});
 		    });
 		});
 	</script>
@@ -28,8 +39,27 @@
 			<h1>メモ一覧</h1>
 		</div>
 		<div data-role="content">
+			<a href="#newpage" data-transition="pop" data-role="button" data-theme="b" data-rel="dialog">新規登録</a>
+		</div>
+		<div data-role="content">
 			<ul id="note" data-role="listview" data-inset="true" data-filter="true">
 			</ul>
+		</div>
+	</div>
+	<div id="newpage" data-role="page">
+		<div data-role="content">
+			<div data-role="fieldcontain">
+				<label for="memo_title">タイトル</label>
+				<input id="memo_title" name="memo[title]" type="text" />
+			</div>
+			<div data-role="fieldcontain">
+				<label for="memo_note">タイトル</label>
+				<textarea id="memo_note" name="memo[note]" type="text">
+</textarea>
+			</div>
+			<div data-role="fieldcontain">
+				<button id="createMemo" data-theme="b">Create Memo</button>
+			</div>
 		</div>
 	</div>
 	<div id="capture" data-role="page">
