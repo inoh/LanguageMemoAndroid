@@ -13,12 +13,28 @@
 		$(function () {
 			$("#getCamera").click (lm.getCamera);
 			$("#getLibrary").click (lm.getLibrary);
+			/*
 		    $.getJSON(lm.URL + "/memos.json", function (data) {
-   	    		jQuery.each(data, function () {
+	    		jQuery.each(data, function () {
 		            $("ul#note").append('<li><a href="#capture" onClick="lm.setId(\'' + this.id + '\')" data-icon="none" data-transition="pop" data-rel="dialog">' + this.title + '</a></li>');
-       			});
-	        	$("ul#note").listview('refresh')
+   				});
+	       		$("ul#note").listview('refresh')
 		    });
+		    */
+			$.ajax({
+				type: "GET",
+				url: lm.URL + "/memos.json",
+				dataType: "json",
+				success: function (data, dataType) {
+					jQuery.each(data, function () {
+			            $("ul#note").append('<li><a href="#capture" onClick="lm.setId(\'' + this.id + '\')" data-icon="none" data-transition="pop" data-rel="dialog">' + this.title + '</a></li>');
+					});
+					$("ul#note").listview('refresh')
+				},
+				error: function(request, status, error) {
+					//alert(error);
+				}
+			});
 		    $("#createMemo").click(function () {
 		    	$.post(lm.URL + "/memos.json", {"memo[title]": $("#memo_title").val(), "memo[note]": $("#memo_note").val()})
 		    		.success(function (data) {
